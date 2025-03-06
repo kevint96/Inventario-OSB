@@ -18,7 +18,7 @@ creds = service_account.Credentials.from_service_account_info(credentials_json, 
 gc = gspread.authorize(creds)
 
 # ID de tu Google Sheet (extraído de la URL)
-SHEET_ID = "TU_GOOGLE_SHEET_ID"
+SHEET_ID = "BCS_InventarioServicios_Otorgamiento [Kevin]"
 
 # Nombre de la hoja dentro del archivo
 SHEET_NAME = "Inventario_QA"
