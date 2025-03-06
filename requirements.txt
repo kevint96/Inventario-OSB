@@ -2,3 +2,9 @@ streamlit
 gspread
 oauth2client
 pandas
+st-aggrid
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-auth-transport-requests
