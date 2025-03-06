@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid, GridOptionsBuilder
 import json
 from google.oauth2 import service_account
 import gspread
@@ -17,10 +18,8 @@ creds = service_account.Credentials.from_service_account_info(credentials_json, 
 # Autenticarse en Google Sheets
 gc = gspread.authorize(creds)
 
-# ID de tu Google Sheet (extraído de la URL)
+# ID de tu Google Sheet
 SHEET_ID = "1okOylzxtJeXW3QqtQ8k0ms7QHVQ4_gqkiFs8zPnhKmo"
-
-# Nombre de la hoja dentro del archivo
 SHEET_NAME = "Inventario_QA"
 
 # Cargar los datos desde Google Sheets
@@ -34,20 +33,53 @@ def load_data():
 # Obtener los datos
 df = load_data()
 
-# Mostrar la tabla en la app
-st.dataframe(df)
+# 🔹 Aplicar el filtro de exclusión
+df = df[
+    (df["Tipo Business"] != "N/A") &
+    (~df["Operacion Business"].isin(["manejarError", "registrarAuditoria"]))
+]
 
-# Filtros dinámicos
-st.sidebar.header("🔍 Filtros")
-column = st.sidebar.selectbox("Selecciona columna", df.columns)
-search_value = st.sidebar.text_input("Buscar")
+# Convertir la columna '#' a texto
+df["#"] = df["#"].astype(str)
 
-# Filtrar los datos
-if search_value:
-    df_filtered = df[df[column].astype(str).str.contains(search_value, case=False, na=False)]
-else:
-    df_filtered = df
+# 🔍 **Sidebar de Filtros**
+st.sidebar.header("🔍 Filtros Principales")
 
-# Mostrar los resultados filtrados
-st.subheader("📌 Resultados filtrados")
-st.dataframe(df_filtered)
+# Filtrar por "Servicio" y "Operación"
+servicios = ["Todos"] + sorted(df["Nombre Servicio"].dropna().unique().astype(str))
+operaciones = ["Todos"] + sorted(df["Operacion"].dropna().unique().astype(str))
+
+selected_servicio = st.sidebar.selectbox("Nombre Servicio:", servicios)
+selected_operacion = st.sidebar.selectbox("Operación:", operaciones)
+
+# Aplicar filtro inicial
+df_filtered = df.copy()
+if selected_servicio != "Todos":
+    df_filtered = df_filtered[df_filtered["Nombre Servicio"] == selected_servicio]
+if selected_operacion != "Todos":
+    df_filtered = df_filtered[df_filtered["Operacion"] == selected_operacion]
+
+# **Mostrar filtros adicionales solo si ya se filtró algo**
+if selected_servicio != "Todos" or selected_operacion != "Todos":
+    st.sidebar.header("📌 Filtros Adicionales")
+
+    # Crear listas desplegables dinámicamente según los valores filtrados
+    additional_filters = {}
+    for column in df_filtered.columns:
+        if column not in ["Nombre Servicio", "Operacion"]:  # Excluir filtros principales
+            unique_values = ["Todos"] + sorted(df_filtered[column].dropna().unique().astype(str))
+            selected_value = st.sidebar.selectbox(f"{column}:", unique_values, key=column)
+            additional_filters[column] = selected_value
+
+    # Aplicar filtros adicionales
+    for column, value in additional_filters.items():
+        if value != "Todos":
+            df_filtered = df_filtered[df_filtered[column] == value]
+
+# 📌 Mostrar la tabla filtrada
+st.subheader("📌 Inventario de Servicios OSB")
+st.dataframe(
+    df_filtered,
+    hide_index=True,
+    use_container_width=True
+)
