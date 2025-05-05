@@ -45,8 +45,20 @@ df["#"] = df["#"].astype(str)
 # 🔍 **Sidebar de Filtros**
 st.sidebar.header("🔍 Filtros Principales")
 
+# Combinar columnas de servicios
+servicios_comb = pd.concat([
+    df["Nombre Servicio"],
+    df["Servicio EBS 1"],
+    df["Servicio EBS 2"],
+    df["Servicio EBS 3"],
+    df["Proxy ABC"]
+], ignore_index=True).dropna().astype(str)
+
+# Eliminar duplicados y ordenar
+servicios = ["Todos"] + sorted(set(servicios_comb))
+
 # Filtrar por "Servicio" y "Operación"
-servicios = ["Todos"] + sorted(df["Nombre Servicio"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 1"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 2"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 3"].dropna().unique().astype(str)) + sorted(df["Proxy ABC"].dropna().unique().astype(str))
+#servicios = ["Todos"] + sorted(df["Nombre Servicio"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 1"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 2"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 3"].dropna().unique().astype(str)) + sorted(df["Proxy ABC"].dropna().unique().astype(str))
 operaciones = ["Todos"] + sorted(df["Operacion"].dropna().unique().astype(str)) + sorted(df["Operacion Business"].dropna().unique().astype(str))
 business = ["Todos"] + sorted(df["Nombre Business"].dropna().unique().astype(str))
 

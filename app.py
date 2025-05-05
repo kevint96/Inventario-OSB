@@ -88,7 +88,7 @@ if selected_servicio != "Todos" or selected_operacion != "Todos" or selected_bus
     # Crear listas desplegables dinámicamente según los valores filtrados
     additional_filters = {}
     for column in df_filtered.columns:
-        if column not in ["Nombre Servicio", "Operacion"]:  # Excluir filtros principales
+        if column not in ["Nombre Servicio", "Operacion","Servicio EBS 1","Servicio EBS 2","Servicio EBS 3","Proxy ABC"]:  # Excluir filtros principales
             unique_values = ["Todos"] + sorted(df_filtered[column].dropna().unique().astype(str))
             selected_value = st.sidebar.selectbox(f"{column}:", unique_values, key=column)
             additional_filters[column] = selected_value
