@@ -46,11 +46,13 @@ df["#"] = df["#"].astype(str)
 st.sidebar.header("🔍 Filtros Principales")
 
 # Filtrar por "Servicio" y "Operación"
-servicios = ["Todos"] + sorted(df["Nombre Servicio"].dropna().unique().astype(str))
-operaciones = ["Todos"] + sorted(df["Operacion"].dropna().unique().astype(str))
+servicios = ["Todos"] + sorted(df["Nombre Servicio"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 1"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 2"].dropna().unique().astype(str)) + sorted(df["Servicio EBS 3"].dropna().unique().astype(str)) + sorted(df["Proxy ABC"].dropna().unique().astype(str))
+operaciones = ["Todos"] + sorted(df["Operacion"].dropna().unique().astype(str)) + sorted(df["Operacion Business"].dropna().unique().astype(str))
+business = ["Todos"] + sorted(df["Nombre Business"].dropna().unique().astype(str))
 
 selected_servicio = st.sidebar.selectbox("Nombre Servicio:", servicios)
 selected_operacion = st.sidebar.selectbox("Operación:", operaciones)
+selected_business = st.sidebar.selectbox("Business:", business)
 
 # Aplicar filtro inicial
 df_filtered = df.copy()
@@ -58,6 +60,8 @@ if selected_servicio != "Todos":
     df_filtered = df_filtered[df_filtered["Nombre Servicio"] == selected_servicio]
 if selected_operacion != "Todos":
     df_filtered = df_filtered[df_filtered["Operacion"] == selected_operacion]
+if selected_operacion != "Todos":
+    df_filtered = df_filtered[df_filtered["Nombre Business"] == selected_business]
 
 # **Mostrar filtros adicionales solo si ya se filtró algo**
 if selected_servicio != "Todos" or selected_operacion != "Todos":
