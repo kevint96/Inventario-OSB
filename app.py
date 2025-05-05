@@ -57,14 +57,20 @@ selected_business = st.sidebar.selectbox("Business:", business)
 # Aplicar filtro inicial
 df_filtered = df.copy()
 if selected_servicio != "Todos":
-    df_filtered = df_filtered[df_filtered["Nombre Servicio"] == selected_servicio]
+    df_filtered = df_filtered[
+        (df_filtered["Nombre Servicio"] == selected_servicio) |
+        (df_filtered["Servicio EBS 1"] == selected_servicio) |
+        (df_filtered["Servicio EBS 2"] == selected_servicio) |
+        (df_filtered["Servicio EBS 3"] == selected_servicio) |
+        (df_filtered["Proxy ABC"] == selected_servicio)
+    ]
 if selected_operacion != "Todos":
     df_filtered = df_filtered[df_filtered["Operacion"] == selected_operacion]
-if selected_operacion != "Todos":
+if selected_business != "Todos":
     df_filtered = df_filtered[df_filtered["Nombre Business"] == selected_business]
 
 # **Mostrar filtros adicionales solo si ya se filtró algo**
-if selected_servicio != "Todos" or selected_operacion != "Todos":
+if selected_servicio != "Todos" or selected_operacion != "Todos" or selected_business != "Todos":
     st.sidebar.header("📌 Filtros Adicionales")
 
     # Crear listas desplegables dinámicamente según los valores filtrados
